@@ -77,13 +77,13 @@ var wsServer = new webSocketServer({
             if (userName === false) { // first message sent by user is their name
                 // remember user name
             	var json = JSON.parse(message.utf8Data);
-				var chatRoom = json.type;
-                userName = htmlEntities(json.data);
+				var chatRoomNum = json.chatRoomNum;
+                userName = htmlEntities(json.name);
                 // get random color and send it back to the user
                 userColor = colors.shift();
                 connection.sendUTF(JSON.stringify({ type:'color', data: userColor }));
                 console.log((new Date()) + ' User is known as: ' + userName
-                            + ' with ' + userColor + ' color.' + ' , in room : ' + chatRoom );
+                            + ' with ' + userColor + ' color.' + ' , in room : ' + chatRoomNum );
 
             } else { // log and broadcast the message
                 console.log((new Date()) + ' Received Message from '
