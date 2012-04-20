@@ -5,6 +5,7 @@ $(function () {
     var content = $('#content');
     var input = $('#input');
     var status = $('#status');
+	var joinButton = document.getElementById("joinButton");
 
     // my color assigned by the server
     var myColor = false;
@@ -24,7 +25,7 @@ $(function () {
     }
 
     // open connection
-    var connection = new WebSocket('ws://127.0.0.1:1337');
+    var connection = new WebSocket('ws://127.0.0.1:5000');
 
     connection.onopen = function () {
         // first we want users to enter their names
@@ -82,7 +83,8 @@ $(function () {
                 return;
             }
             // send the message as an ordinary text
-            connection.send(msg);
+			var msgSent = JSON.stringify( { type: 'Init', data: msg} );
+            connection.send(msgSent);
             $(this).val('');
             // disable the input field to make the user wait until server
             // sends back response
@@ -94,6 +96,10 @@ $(function () {
             }
         }
     });
+
+	joinButton.onclick=function(e){
+		alert("Clicked ! ");
+	};
 
     /**
      * This method is optional. If the server wasn't able to respond to the
