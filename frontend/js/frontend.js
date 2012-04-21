@@ -98,11 +98,14 @@ $(function () {
 
 	joinButton.onclick=function(e){
 		var userName = $(input).val();
-		var chatRoomNum = chatRoom.val();
-		if(!userName || !chatRoomNum ){
-			alert("User name or chat room number missing. Please enter !");
+		//var chatRoomNum = chatRoom.val();
+		if(!userName){
+			alert("User name missing. Please enter !");
 			return;
 		}
+
+		var selectedRoomText =  $("select option:selected").text()  ;
+		var chatRoomNum = selectedRoomText.substr(  selectedRoomText.length -1 , 1);
 		var msgSent = JSON.stringify( { name: userName , chatRoomNum: chatRoomNum} );
 		connection.send(msgSent);
 		console.log("sending : " + userName );
@@ -111,6 +114,8 @@ $(function () {
 		if (myName === false) {
 			myName = userName;
 		}
+		var roomName = $('#roomName');
+		roomName.html( "Chat room " + chatRoomNum);
 	};
 
 	/**
