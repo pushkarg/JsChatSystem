@@ -18,9 +18,11 @@ var http = require('http');
 // list of currently connected clients (users)
 var clients = new Array(10);	// There can be 10 chat rooms
 var history = new Array(10)
+var clientNames = new Array(10);
 for(var i=0;i<10;i++){	//Create an empty history & client list for each of the 10 chat rooms
 	clients[i] = new Array(0);
 	history[i] = new Array(0);
+	clientNames[i] = new Array(0);
 }
 
 
@@ -84,6 +86,15 @@ var wsServer = new webSocketServer({
                 // get the user name  & chat room number from the Json string
             	var json = JSON.parse(message.utf8Data);
 				chatRoomNum = json.chatRoomNum - 1;
+				if(json.type == "chatRoomList"){
+					var roomNum = parseInt(json.option);
+					console.log("Asking for  : " + roomNum);
+        			connection.sendUTF(JSON.stringify( { type: 'memberList', data: clientNames[roomNum - 1] , roomNum:roomNum ,count:clientNames[roomNum - 1].length } ));
+					console.log("send : " + clientNames[roomNum - 1][0]);
+					//for(var o=0;o<5;o++)
+						//console.log("cl : " + clientNames[o][0] + " , for o : " + o);
+					return;
+				}
 
     			// we need to know client index to remove them on 'close' event
     			index = clients[chatRoomNum].push(connection) - 1;
@@ -94,6 +105,7 @@ var wsServer = new webSocketServer({
 
 
                 userName = htmlEntities(json.name);
+				clientNames[chatRoomNum].push(userName);
                 // get random color and send it back to the user
                 userColor = colors.shift();
                 connection.sendUTF(JSON.stringify({ type:'color', data: userColor }));

@@ -13,11 +13,14 @@
         #input { border-radius:2px; border:1px solid #ccc;
                  margin-top:10px; padding:5px; width:400px;  }
         #status { width:88px; display:block; float:left; margin-top:15px; }
-		#joinButton {margin-top:20px;display:block;}
+		#joinButton {margin-top:20px;}
         #chatRoom { border-radius:2px; border:1px solid #ccc;
                  margin-top:10px; padding:5px; width:400px;  }
 		#chatRoomPart {margin-top:10px;}
+		#chatRoomList{width:200px;margin-right:70px;}
 		#roomName {text-align:center;margin:5px auto; width:500px;font-size:16px;display:block;}
+		#otherMembers {margin-top:30px;}
+		#chatRoomSpan {margin-right:10px;}
         </style>
     </head>
     <body>
@@ -39,6 +42,7 @@
   				</select>
             	<!-- <input type="text" id="chatRoom" /> -->
             	<button type="submit" id="joinButton" name="Join Chat !" >Join Chat!</button>
+				<div id="otherMembers"></div>
 			</div>
 
         </div>
