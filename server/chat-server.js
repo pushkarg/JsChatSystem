@@ -14,10 +14,18 @@ var http = require('http');
 /**
  * Global variables
  */
-// latest 100 messages
-var history = [ ];
+
 // list of currently connected clients (users)
-var clients = [ ];
+var clients = new Array(10);	// There can be 10 chat rooms
+var history = new Array(10)
+for(var i=0;i<10;i++){	//Create an empty history & client list for each of the 10 chat rooms
+	clients[i] = new Array(0);
+	history[i] = new Array(0);
+}
+
+
+//////////////////
+//////////////////
 
 /**
  * Helper function for escaping input strings
@@ -59,25 +67,32 @@ var wsServer = new webSocketServer({
     // client is connecting from your website
     // (http://en.wikipedia.org/wiki/Same_origin_policy)
     var connection = request.accept(null, request.origin); 
-    // we need to know client index to remove them on 'close' event
-    var index = clients.push(connection) - 1;
+    var index;
     var userName = false;
     var userColor = false;
+	var chatRoomNum =999;
 
     console.log((new Date()) + ' Connection accepted.');
 
-    // send back chat history
-    if (history.length > 0) {
-        connection.sendUTF(JSON.stringify( { type: 'history', data: history} ));
-    }
 
     // user sent some message
     connection.on('message', function(message) {
         if (message.type === 'utf8') { // accept only text
             if (userName === false) { // first message sent by user is their name
-                // remember user name
+
+
+                // get the user name  & chat room number from the Json string
             	var json = JSON.parse(message.utf8Data);
-				var chatRoomNum = json.chatRoomNum;
+				chatRoomNum = json.chatRoomNum - 1;
+
+    			// we need to know client index to remove them on 'close' event
+    			index = clients[chatRoomNum].push(connection) - 1;
+    			// send back chat history
+    			if (history[chatRoomNum].length > 0) {
+        			connection.sendUTF(JSON.stringify( { type: 'history', data: history[chatRoomNum]} ));
+    			}
+
+
                 userName = htmlEntities(json.name);
                 // get random color and send it back to the user
                 userColor = colors.shift();
@@ -96,13 +111,13 @@ var wsServer = new webSocketServer({
                     author: userName,
                     color: userColor
                 };
-                history.push(obj);
-                history.slice(-100);
+                history[chatRoomNum].push(obj);
+                history[chatRoomNum].slice(-100);
 
                 // broadcast message to all connected clients
                 var json = JSON.stringify({ type:'message', data: obj });
-                for (var i=0; i < clients.length; i++) {
-                    clients[i].sendUTF(json);
+                for (var i=0; i < clients[chatRoomNum].length; i++) {
+                    clients[chatRoomNum][i].sendUTF(json);
                 }
             }
         }
@@ -114,7 +129,7 @@ var wsServer = new webSocketServer({
             console.log((new Date()) + " Peer "
                 + connection.remoteAddress + " disconnected.");
             // remove user from the list of connected clients
-            clients.splice(index, 1);
+            clients[chatRoomNum].splice(index, 1);
             // push back user's color to be reused by another user
             colors.push(userColor);
         }
