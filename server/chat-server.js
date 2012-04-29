@@ -129,7 +129,8 @@ var wsServer = new webSocketServer({
                 // broadcast message to all connected clients
                 var json = JSON.stringify({ type:'message', data: obj });
                 for (var i=0; i < clients[chatRoomNum].length; i++) {
-                    clients[chatRoomNum][i].sendUTF(json);
+					if(clients[chatRoomNum][i]!=null)
+                    	clients[chatRoomNum][i].sendUTF(json);
                 }
             }
         }
@@ -141,7 +142,8 @@ var wsServer = new webSocketServer({
             console.log((new Date()) + " Peer "
                 + connection.remoteAddress + " disconnected.");
             // remove user from the list of connected clients
-            clients[chatRoomNum].splice(index, 1);
+            clients[chatRoomNum][index] = null;
+            //clients[chatRoomNum].splice(index, 1);
             // push back user's color to be reused by another user
             colors.push(userColor);
         }
